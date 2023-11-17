@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Firebase_version9_RealtimeDB(G'sACADEMY初学者用サンプル)</title>
+</head>
+<body>
+
+<!-- コンテンツ表示画面 -->
+<div>
+    <div> 名前：<input type="text" id="uname"> </div>
+    <div>
+        <textarea id="text" cols="30" rows="10"></textarea>
+        <button id="send">送信</button>
+    </div>
+    <div id="output" style="overflow: auto;height: 300px;"></div>
+</div>
+<!--/ コンテンツ表示画面 -->
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- JQuery -->
+
+
+<!--** 以下Firebase **-->
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+    import { getDatabase, ref, push, set, update,onChildAdded, remove, onChildChanged,onChildRemoved } 
+    from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "*********************************",
+    authDomain: "****[ Your Firebase KEY ]****",
+    databaseURL: "****************************",
+    projectId: "**********",
+    storageBucket: "**************************",
+    messagingSenderId: "**********************",
+    appId: "**********************************",
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db=getDatabase();
+    const dbRef = ref(db,"chat");// ユニークキーを生成データを書き込むパスを指定
+
+    // データ登録
+    $('#send').on('click',()=>{
+        const msg={
+        uname:$('#uname').val(),
+         text:$('#text').val()
+    }
+     const newPostRef=push(dbRef);// リストにデータが追加されるたびにユニークキーを生成
+     set(newPostRef,msg);// firebaseのDBにユニークキーとmsgの値を保存
+        
+    });
+
+    // 最初にデータ取得＆onsnapshotでリアルタイムにデータを登録
+    onChildAdded(dbRef,(data)=>{
+        const msg =data.val();// .valにしないとオブジェクト変数にならないため必須
+        const key=data.key;  //ユニークキーを取得するコード_更新＆削除更新に必須
+        let h ='<p id="'+key+'">';
+            h+=msg.uname;
+            h+='<br>';
+            h+='<span contentEditable="true" id="'+key+'_update">'+msg.text+'</span>';
+            h+='<span class="remove" data-key="'+key+'">㌶</span>';
+            h+='<span class="update" data-key="'+key+'">㌍</span>';
+            h+='</p>';
+            $('#output').append(h);
+    });
+
+//削除イベント
+// $('#output').on("click","remove",()=>{
+//     const key=$(this).attr("data-key");
+//     const remove_item=ref(db,"chat/"+key),
+// });
+
+// // 更新イベント
+// $('#output').on("click","update",()=>{
+//     const key=$(this).attr("data-key");
+//     const update_item=ref(db,"chat/"+key),
+  </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
